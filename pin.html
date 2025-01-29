@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masukkan PIN</title>
+    <title>Input PIN</title>
 </head>
 <body>
     <h2>Masukkan PIN</h2>
     <form id="formPin">
-        <input type="text" id="pin" placeholder="Masukkan PIN" required>
+        <label for="pin">PIN (6 digit):</label>
+        <input type="password" id="pin" name="pin" required minlength="6" maxlength="6">
         <button type="submit">Kirim</button>
     </form>
 
-    <script src="script.js"></script>  
+    <script src="script.js"></script>
 </body>
 </html>
